@@ -30,21 +30,7 @@ public class AccountManagmentServiceImpl implements AccountManagmentService {
     UserManagmentService userService;
 
     @Override
-    public void initService() {
-        try {
-            deposit(1L, 100, "GBP" );
-            withdraw(1L, 100, "GBP");
-
-            // fetch an individual user by ID
-            log.info("Get user 1 balance with balance(1L):");
-            log.info("--------------------------------");
-            log.info(balance(1L));
-            log.info("--------------------------------");
-            log.info("");
-        } catch (UnknownCurrencyException|InsufficientFundsException|NoSuchUserException ex) {
-            log.error("Can't make account actions", ex);
-        }
-    }
+    public void initService() {}
 
     @Override
     public Account createAccount(User user, String currency_name) throws UnknownCurrencyException, NoSuchUserException {
@@ -135,6 +121,6 @@ public class AccountManagmentServiceImpl implements AccountManagmentService {
                     throw new InsufficientFundsException();
                 }
             }
-        };
+        }
     }
 }

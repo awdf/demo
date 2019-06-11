@@ -29,6 +29,15 @@ public class WalletClient {
     private final ManagedChannel channel;
     private final WalletGrpc.WalletBlockingStub stub;
 
+    //number of concurrent users emulated
+    private static long users = 1;
+
+    //number of concurrent requests a user will make
+    private static long concurrentThreadsPerUser = 1;
+
+    //number of rounds each thread is executing
+    private static long roundsPerThread = 1;
+
     public WalletClient() {
         // we should get this info from a service like eureka
         this.channel = ManagedChannelBuilder.forAddress("localhost", 6565)
@@ -40,7 +49,7 @@ public class WalletClient {
 
     }
 
-    public void shutdown() throws InterruptedException {
+    private void shutdown() throws InterruptedException {
         channel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
     }
 
@@ -51,7 +60,7 @@ public class WalletClient {
         System.exit(0);
     }
 
-    public void doAction() throws InterruptedException {
+    private void doAction() throws InterruptedException {
 //        ActionRequest request = ActionRequest.newBuilder()
 //                .setOperation(BALANCE)
 //                .setUser(1)
@@ -83,6 +92,27 @@ public class WalletClient {
         }
     }
 
+    public static void setUsers(long users) {
+        WalletClient.users = users;
+    }
 
+    public static void setConcurrentThreadsPerUser(long concurrentThreadsPerUser) {
+        WalletClient.concurrentThreadsPerUser = concurrentThreadsPerUser;
+    }
 
+    public static void setRoundsPerThread(long roundsPerThread) {
+        WalletClient.roundsPerThread = roundsPerThread;
+    }
+
+    public static long getUsers() {
+        return users;
+    }
+
+    public static long getConcurrentThreadsPerUser() {
+        return concurrentThreadsPerUser;
+    }
+
+    public static long getRoundsPerThread() {
+        return roundsPerThread;
+    }
 }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -24,8 +25,12 @@ public class CurrencyManagmentServiceImpl implements CurrencyManagmentService {
     private Map<String, Long> dictionary_name;
 
     @Override
-    @PostConstruct
     public void initService(){
+
+    }
+
+    @PostConstruct
+    private void build(){
         log.info("Currencies found with findAll():");
         log.info("-------------------------------");
 
@@ -46,10 +51,15 @@ public class CurrencyManagmentServiceImpl implements CurrencyManagmentService {
     @Override
     public String getById(long id){
         return dictionary_id.get(id);
-    };
+    }
 
     @Override
     public Long getByName(String name) {
         return dictionary_name.get(name);
+    }
+
+    @Override
+    public List<Currency> getAllCurrencies(){
+        return repository.findAll();
     }
 }

@@ -2,6 +2,7 @@ package com.example.demo.services.Impl;
 
 import com.example.demo.exceptions.NoSuchUserException;
 import com.example.demo.models.Account;
+import com.example.demo.models.Currency;
 import com.example.demo.models.User;
 import com.example.demo.services.AccountManagmentService;
 import com.example.demo.services.CurrencyManagmentService;
@@ -31,24 +32,28 @@ public class UserManagmentServiceImpl implements UserManagmentService {
 
     @Override
     public void initService(){
-        // fetch all users
+        // remove all users
         log.info("Users found with getAllUsers:");
         log.info("-------------------------------");
-        for (User user : this.getAllUsers()) {
+        this.getAllUsers().forEach((user)->{
             log.info(user.toString());
-        }
+            if (user.getId() != 1) {
+                try {
+                    removeUser(user.getId());
+                } catch (NoSuchUserException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         log.info("");
     }
 
     @Override
-    public User createUser(String ... currencies){
+    public User createUser(List<Currency> currencies) {
         List<Account> accounts = new LinkedList<>();
 
-        for (String currency : currencies) {
-            Long currency_id = currencyService.getByName(currency);
-            if (currency_id != null) {
-                accounts.add(new Account(0,currency_id));
-            }
+        for (Currency currency : currencies) {
+                accounts.add(new Account(0,currency.getId()));
         }
 
         User user = new User(accounts.size(), accounts);

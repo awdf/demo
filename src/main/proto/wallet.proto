@@ -32,6 +32,7 @@ message ActionRequest {
         BALANCE = 0;
         DEPOSIT = 1;
         WITHDRAW = 2;
+        CREATE=3;
     }
     Operation operation = 4;
 }

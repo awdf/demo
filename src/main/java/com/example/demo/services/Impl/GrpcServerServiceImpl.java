@@ -1,14 +1,12 @@
 package com.example.demo.services.Impl;
 
-import com.example.demo.exceptions.InsufficientFundsException;
-import com.example.demo.exceptions.NoSuchUserException;
-import com.example.demo.exceptions.UnknownCurrencyException;
 import com.example.demo.server.ActionReply;
 import com.example.demo.server.ActionRequest;
 import com.example.demo.server.WalletGrpc;
 import com.example.demo.services.AccountManagmentService;
 import com.example.demo.services.BaseService;
 import com.example.demo.services.CurrencyManagmentService;
+import com.example.demo.services.UserManagmentService;
 import org.lognet.springboot.grpc.GRpcService;
 
 import io.grpc.stub.StreamObserver;
@@ -21,7 +19,13 @@ public class GrpcServerServiceImpl extends WalletGrpc.WalletImplBase implements 
     private static final Logger log = LoggerFactory.getLogger(GrpcServerServiceImpl.class);
 
     @Autowired
-    AccountManagmentService accountSerice;
+    UserManagmentService userService;
+
+    @Autowired
+    AccountManagmentService accountService;
+
+    @Autowired
+    CurrencyManagmentService currencyService;
 
     @Override
     public void action(ActionRequest request, StreamObserver<ActionReply> responseObserver) {
@@ -30,13 +34,16 @@ public class GrpcServerServiceImpl extends WalletGrpc.WalletImplBase implements 
         try {
             switch (request.getOperation()){
                 case BALANCE:
-                    message = accountSerice.balance(request.getUser());
+                    message = accountService.balance(request.getUser());
                     break;
                 case DEPOSIT:
-                    accountSerice.deposit(request.getUser(), request.getAmount(), request.getCurrency().name());
+                    accountService.deposit(request.getUser(), request.getAmount(), request.getCurrency().name());
                     break;
                 case WITHDRAW:
-                    accountSerice.withdraw(request.getUser(), request.getAmount(), request.getCurrency().name());
+                    accountService.withdraw(request.getUser(), request.getAmount(), request.getCurrency().name());
+                    break;
+                case CREATE:
+                    userService.createUser(currencyService.getAllCurrencies());
                     break;
                 case UNRECOGNIZED:
                     message = request.getOperation().name();

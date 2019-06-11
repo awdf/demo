@@ -15,6 +15,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import javax.annotation.PostConstruct;
+import java.util.Arrays;
+import java.util.Properties;
 
 @SpringBootApplication
 @EnableJpaAuditing
@@ -27,7 +29,29 @@ public class WalletServer extends SpringBootServletInitializer {
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(WalletServer.class, args);
+        args = new String[]{"U10", "C10", "R3"};
+
+        System.out.println("Arguments: ");
+        Arrays.stream(args).forEach((a)-> {
+            System.out.println(a);
+            int value = Integer.parseInt(a.replaceAll("[^0-9]", ""));
+            if (a.startsWith("U")) {
+                WalletClient.setUsers(value);
+            } else
+            if (a.startsWith("C")) {
+                WalletClient.setConcurrentThreadsPerUser(value);
+            } else
+            if (a.startsWith("R")) {
+                WalletClient.setRoundsPerThread(value);
+            } else {
+                System.out.println("Wrong argument: " + a);
+            }
+        });
+
+
+        SpringApplication application = new SpringApplication(WalletServer.class);
+        application.setAddCommandLineProperties(false);
+        application.run(args);
     }
 
     @PostConstruct
@@ -45,6 +69,7 @@ public class WalletServer extends SpringBootServletInitializer {
         return (args) -> {
             ctx.getBeansOfType(BaseService.class).forEach((k,v)->{
                 log.info("Found service implementation: " + k);
+                v.initService();
             });
             log.info("");
         };
