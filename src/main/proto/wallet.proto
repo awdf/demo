@@ -1,0 +1,41 @@
+
+syntax = "proto3";
+
+package com.example.demo.server;
+
+option java_multiple_files = true;
+option java_package = "com.example.demo.server";
+option java_outer_classname = "WalletProto";
+option objc_class_prefix="WLT";
+option optimize_for  = CODE_SIZE;
+
+
+// The greeter service definition.
+service Wallet {
+    rpc action ( ActionRequest ) returns ( ActionReply ) {}
+}
+
+message ActionRequest {
+    int32 user = 1;
+    int32 amount = 2;
+
+
+    enum Currency {
+        UNKNOWN=0;
+        GBP=1;
+        EUR=2;
+        USD=3;
+    }
+    Currency currency = 3;
+
+    enum Operation{
+        BALANCE = 0;
+        DEPOSIT = 1;
+        WITHDRAW = 2;
+    }
+    Operation operation = 4;
+}
+
+message ActionReply {
+    string message = 1;
+}

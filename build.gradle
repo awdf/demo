@@ -1,0 +1,144 @@
+plugins {
+    id 'io.spring.dependency-management' version '1.0.7.RELEASE'
+    id 'org.springframework.boot' version '2.1.5.RELEASE'
+    id 'com.google.protobuf' version '0.8.8'
+    id 'java'
+    id 'idea'
+    id 'war'
+}
+
+apply plugin: 'war'
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'com.google.protobuf'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+def grpcVersion = '1.21.0'
+def protobufVersion = '3.7.1'
+def protocVersion = protobufVersion
+def opencensusVersion = '0.22.1'
+def junitVersion = '5.1.1'
+
+repositories {
+    mavenLocal()
+    maven {url "https://maven-central.storage-download.googleapis.com/repos/central/data/"}
+    maven { url "http://repo.springsource.org/libs-snapshot" }
+    maven { url "http://repo.springsource.org/plugins-release" }
+    maven { url "https://plugins.gradle.org/m2/" }
+    mavenCentral()
+    jcenter()
+}
+
+configurations {
+
+    developmentOnly
+
+    runtimeClasspath {
+        extendsFrom developmentOnly
+    }
+
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+dependencies {
+    implementation "io.github.lognet:grpc-spring-boot-starter:3.3.0"
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+    implementation "org.springframework.boot:spring-boot-starter-actuator"
+    implementation "io.grpc:grpc-protobuf:${grpcVersion}"
+    implementation "io.grpc:grpc-stub:${grpcVersion}"
+
+
+    compileOnly "org.springframework.boot:spring-boot-configuration-processor"
+    compileOnly "org.springframework.boot:spring-boot-gradle-plugin:1.5.10.RELEASE"
+    compileOnly "org.projectlombok:lombok"
+    compileOnly "io.opencensus:opencensus-api:${opencensusVersion}"
+
+    runtimeOnly "mysql:mysql-connector-java"
+    runtimeOnly "io.grpc:grpc-netty-shaded:${grpcVersion}"
+    runtimeOnly "io.opencensus:opencensus-impl:${opencensusVersion}"
+
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "org.junit.jupiter:junit-jupiter-params:${junitVersion}"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+
+    testCompileOnly "junit:junit:4.12"
+
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher:1.4.2"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+    testRuntimeOnly "org.junit.vintage:junit-vintage-engine:${junitVersion}"
+
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+}
+
+sourceSets {
+    main {
+        main {
+            java {
+                srcDirs 'build/generated/sources/proto/main/grpc'
+                srcDirs 'build/generated/sources/proto/main/java'
+            }
+        }
+        proto {
+            srcDir 'src/main/proto'
+        }
+    }
+}
+
+test {
+    useJUnitPlatform{
+        includeEngines 'junit-jupiter', 'junit-vintage'
+    }
+
+    testLogging {
+        events 'PASSED', 'FAILED', 'SKIPPED'
+    }
+
+    afterSuite { desc, result ->
+        if (!desc.parent) {
+            println "\nTest result: ${result.resultType}"
+            println "Test summary: ${result.testCount} tests, " +
+                    "${result.successfulTestCount} succeeded, " +
+                    "${result.failedTestCount} failed, " +
+                    "${result.skippedTestCount} skipped"
+        }
+    }
+}
+
+protobuf {
+    protoc { artifact = "com.google.protobuf:protoc:${protocVersion}" }
+    plugins {
+        grpc { artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}" }
+    }
+
+    generateProtoTasks {
+        all().each { task ->
+            task.builtins {
+                java {
+                    outputSubDir = 'generated'
+                }
+            }
+            task.plugins {
+                grpc {
+                    outputSubDir = 'generated'
+                }
+            }
+        }
+    }
+    generatedFilesBaseDir = "$projectDir/src/"
+}
+
+task cleanGenerated{
+    doFirst{
+        delete("$projectDir/src/main/generated")
+    }
+}
+clean.dependsOn cleanGenerated
