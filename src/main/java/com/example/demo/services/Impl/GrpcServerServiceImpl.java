@@ -1,5 +1,6 @@
 package com.example.demo.services.Impl;
 
+import com.example.demo.models.User;
 import com.example.demo.server.ActionReply;
 import com.example.demo.server.ActionRequest;
 import com.example.demo.server.WalletGrpc;
@@ -18,18 +19,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class GrpcServerServiceImpl extends WalletGrpc.WalletImplBase implements BaseService {
     private static final Logger log = LoggerFactory.getLogger(GrpcServerServiceImpl.class);
 
-    @Autowired
-    UserManagmentService userService;
+    private final UserManagmentService userService;
 
-    @Autowired
-    AccountManagmentService accountService;
+    private final AccountManagmentService accountService;
 
-    @Autowired
-    CurrencyManagmentService currencyService;
+    private final CurrencyManagmentService currencyService;
+
+    public GrpcServerServiceImpl(UserManagmentService userService, AccountManagmentService accountService, CurrencyManagmentService currencyService) {
+        this.userService = userService;
+        this.accountService = accountService;
+        this.currencyService = currencyService;
+    }
 
     @Override
     public void action(ActionRequest request, StreamObserver<ActionReply> responseObserver) {
-        log.info("Request received!");
+        log.info("Request received " + request.getOperation().name());
+
         String message = "done";
         try {
             switch (request.getOperation()){
@@ -43,7 +48,8 @@ public class GrpcServerServiceImpl extends WalletGrpc.WalletImplBase implements 
                     accountService.withdraw(request.getUser(), request.getAmount(), request.getCurrency().name());
                     break;
                 case CREATE:
-                    userService.createUser(currencyService.getAllCurrencies());
+                    User user = userService.createUser(currencyService.getAllCurrencies());
+                    message = String.valueOf(user.getId());
                     break;
                 case UNRECOGNIZED:
                     message = request.getOperation().name();

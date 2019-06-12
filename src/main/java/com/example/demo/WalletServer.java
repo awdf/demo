@@ -29,7 +29,6 @@ public class WalletServer extends SpringBootServletInitializer {
     }
 
     public static void main(String[] args) {
-        args = new String[]{"U10", "C10", "R3"};
 
         System.out.println("Arguments: ");
         Arrays.stream(args).forEach((a)-> {

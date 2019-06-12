@@ -13,21 +13,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
 public class AccountManagmentServiceImpl implements AccountManagmentService {
     private static final Logger log = LoggerFactory.getLogger(AccountManagmentServiceImpl.class);
 
-    @Autowired
-    AccountRepository repository;
+    private final AccountRepository repository;
 
-    @Autowired
-    CurrencyManagmentService currencyService;
+    private final CurrencyManagmentService currencyService;
 
-    @Autowired
-    UserManagmentService userService;
+    private final UserManagmentService userService;
+
+    public AccountManagmentServiceImpl(AccountRepository repository, CurrencyManagmentService currencyService, UserManagmentService userService) {
+        this.repository = repository;
+        this.currencyService = currencyService;
+        this.userService = userService;
+    }
 
     @Override
     public void initService() {}
@@ -106,9 +108,6 @@ public class AccountManagmentServiceImpl implements AccountManagmentService {
         }
 
         User user = userService.getUserById(user_id);
-        if (user == null) {
-            throw new NoSuchUserException();
-        }
 
         for (Account account : user.getAccounts()) {
             if (account.getCurrency() == cid) {

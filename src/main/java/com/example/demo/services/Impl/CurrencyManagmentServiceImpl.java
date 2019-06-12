@@ -18,11 +18,15 @@ import java.util.Map;
 public class CurrencyManagmentServiceImpl implements CurrencyManagmentService {
     private static final Logger log = LoggerFactory.getLogger(CurrencyManagmentServiceImpl.class);
 
-    @Autowired
-    CurrencyRepository repository;
+    private final CurrencyRepository repository;
 
     private Map<Long, String> dictionary_id;
     private Map<String, Long> dictionary_name;
+    private List<Currency> all;
+
+    public CurrencyManagmentServiceImpl(CurrencyRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     public void initService(){
@@ -34,9 +38,11 @@ public class CurrencyManagmentServiceImpl implements CurrencyManagmentService {
         log.info("Currencies found with findAll():");
         log.info("-------------------------------");
 
+        all = Collections.unmodifiableList(repository.findAll());
+
         HashMap<Long, String> d_i = new HashMap<>();
         HashMap<String, Long> d_n = new HashMap<>();
-        for (Currency currency : repository.findAll()) {
+        for (Currency currency : all) {
             log.info(currency.toString());
             d_i.put(currency.getId(), currency.getName());
             d_n.put(currency.getName(), currency.getId());
@@ -60,6 +66,6 @@ public class CurrencyManagmentServiceImpl implements CurrencyManagmentService {
 
     @Override
     public List<Currency> getAllCurrencies(){
-        return repository.findAll();
+        return all;
     }
 }
