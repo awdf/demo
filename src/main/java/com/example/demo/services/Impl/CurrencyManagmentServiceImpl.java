@@ -1,11 +1,10 @@
 package com.example.demo.services.Impl;
 
+import com.example.demo.dao.CurrencyRepository;
 import com.example.demo.models.Currency;
 import com.example.demo.services.CurrencyManagmentService;
-import com.example.demo.dao.CurrencyRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;

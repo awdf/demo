@@ -13,7 +13,6 @@ import org.lognet.springboot.grpc.GRpcService;
 import io.grpc.stub.StreamObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @GRpcService
 public class GrpcServerServiceImpl extends WalletGrpc.WalletImplBase implements BaseService {
@@ -65,7 +64,5 @@ public class GrpcServerServiceImpl extends WalletGrpc.WalletImplBase implements 
     }
 
     @Override
-    public void initService() {
-
-    }
+    public void initService() {}
 }

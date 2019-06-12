@@ -16,7 +16,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import javax.annotation.PostConstruct;
 import java.util.Arrays;
-import java.util.Properties;
 
 @SpringBootApplication
 @EnableJpaAuditing
@@ -29,7 +28,9 @@ public class WalletServer extends SpringBootServletInitializer {
     }
 
     public static void main(String[] args) {
-        args = new String[]{"U10", "C2", "R1"};
+        if (args.length != 3) {
+            args = new String[]{"U10", "C2", "R3"};
+        }
 
         System.out.println("Arguments: ");
         Arrays.stream(args).forEach((a)-> {

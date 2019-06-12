@@ -111,6 +111,8 @@ public class WalletClient {
     }
 
     private boolean userEmulation(Integer user_id){
+        if (user_id == null) return true;
+
         List<ActionRequest> actions = new LinkedList<>();
 
         for (int i = 0; i < roundsPerThread; i++) {
