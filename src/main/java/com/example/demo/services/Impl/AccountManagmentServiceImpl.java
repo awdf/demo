@@ -19,17 +19,14 @@ import java.util.NoSuchElementException;
 public class AccountManagmentServiceImpl implements AccountManagmentService {
     private static final Logger log = LoggerFactory.getLogger(AccountManagmentServiceImpl.class);
 
-    private final AccountRepository repository;
+    @Autowired
+    private AccountRepository repository;
 
-    private final CurrencyManagmentService currencyService;
+    @Autowired
+    private CurrencyManagmentService currencyService;
 
-    private final UserManagmentService userService;
-
-    public AccountManagmentServiceImpl(AccountRepository repository, CurrencyManagmentService currencyService, UserManagmentService userService) {
-        this.repository = repository;
-        this.currencyService = currencyService;
-        this.userService = userService;
-    }
+    @Autowired
+    private UserManagmentService userService;
 
     @Override
     public void initService() {}
