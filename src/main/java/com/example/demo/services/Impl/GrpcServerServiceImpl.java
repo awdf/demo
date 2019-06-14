@@ -14,9 +14,12 @@ import io.grpc.stub.StreamObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PreDestroy;
+
 @GRpcService
 public class GrpcServerServiceImpl extends WalletGrpc.WalletImplBase implements BaseService {
     private static final Logger log = LoggerFactory.getLogger(GrpcServerServiceImpl.class);
+    private static long counter = 0;
 
     private final UserManagmentService userService;
 
@@ -32,7 +35,7 @@ public class GrpcServerServiceImpl extends WalletGrpc.WalletImplBase implements 
 
     @Override
     public void action(ActionRequest request, StreamObserver<ActionReply> responseObserver) {
-        log.info("Request received " + request.getOperation().name());
+        log.debug("Request {} received {} ", ++counter, request.getOperation().name());
 
         String message = "done";
         try {
@@ -64,6 +67,11 @@ public class GrpcServerServiceImpl extends WalletGrpc.WalletImplBase implements 
         ActionReply reply = ActionReply.newBuilder().setMessage(message).build();
         responseObserver.onNext(reply);
         responseObserver.onCompleted();
+    }
+
+    @PreDestroy
+    public void onDestroy(){
+        log.info("gRPC service total {}", counter);
     }
 
     @Override

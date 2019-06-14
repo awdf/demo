@@ -9,6 +9,7 @@ import com.example.demo.services.AccountManagmentService;
 import com.example.demo.services.CurrencyManagmentService;
 import com.example.demo.services.UserManagmentService;
 import com.google.gson.internal.LinkedTreeMap;
+import org.apache.el.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class UserManagmentServiceImpl implements UserManagmentService {
@@ -32,7 +34,8 @@ public class UserManagmentServiceImpl implements UserManagmentService {
     @Autowired
     AccountManagmentService accountService;
 
-    Map<Long, User> usersCacheLayer = new LinkedTreeMap<>();
+    Map<Long, User> usersCacheLayer = new ConcurrentHashMap<>();
+    List<User> retired = new LinkedList<>();
 
     @Override
     public void initService(){}
@@ -65,7 +68,7 @@ public class UserManagmentServiceImpl implements UserManagmentService {
             account.setUser(user);
         });
 
-        User created = repository.saveAndFlush(user);
+        User created = repository.save(user);
         usersCacheLayer.put(created.getId(), created);
         return created;
     }
@@ -80,12 +83,15 @@ public class UserManagmentServiceImpl implements UserManagmentService {
     public User getUserById(long id) throws NoSuchUserException {
         User cached = usersCacheLayer.get(id);
         if (cached != null) {
-            cached.setAccount(cached.getAccounts().size());
+            cached.setAccountTTL(cached.getAccounts().size());
             return cached;
         }
 
         try {
-            return repository.findById(id).get();
+            User user = repository.findById(id).get();
+            user.setAccountTTL(user.getAccounts().size());
+            usersCacheLayer.put(id, user);
+            return user;
         } catch (NoSuchElementException ex) {
             throw new NoSuchUserException();
         }
@@ -93,19 +99,23 @@ public class UserManagmentServiceImpl implements UserManagmentService {
 
     @Scheduled(initialDelay=10000, fixedRate = 10000)
     private void synchronize(){
+        //Find new retired users
         usersCacheLayer.forEach((id, user)->{
-            if (user.getAccount() == 0) {
-                repository.save(user);
-                usersCacheLayer.remove(id);
+            if (user.getAccountTTL() == 0) {
+                usersCacheLayer.remove(id, user);
+                retired.add(user);
             } else {
-                user.setAccount(user.getAccount() - 1);
+                user.setAccountTTL(user.getAccountTTL() - 1);
             }
         });
+
+        repository.saveAll(retired);
+        retired.clear();
     }
 
     @PreDestroy
     public void onDestroy(){
-        usersCacheLayer.forEach((id, user)-> repository.save(user));
+        repository.saveAll(usersCacheLayer.values());
         repository.flush();
         log.info("User service shutdown");
     }

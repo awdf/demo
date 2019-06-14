@@ -1,6 +1,5 @@
 package com.example.demo;
 
-import com.example.demo.server.ActionReply;
 import com.example.demo.server.ActionRequest;
 import com.example.demo.server.WalletGrpc;
 import io.grpc.ManagedChannel;
@@ -14,11 +13,14 @@ import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static com.example.demo.server.ActionRequest.Currency.*;
 import static com.example.demo.server.ActionRequest.Operation.*;
@@ -85,13 +87,12 @@ public class WalletClient {
     private List<Integer> createUsers(){
         List<Integer> usersId = new LinkedList<>();
 
-        for (int i=0; i < users; i++) {
-            ActionReply reply = stub.action(ActionRequest.newBuilder().setOperation(CREATE).build());
-            int id = Integer.parseInt(reply.getMessage());
-            for (int j = 0; j < concurrentThreadsPerUser; j++) {
-                usersId.add(id);
-            }
-        }
+        IntStream.range(0, users)
+        .mapToObj(n -> stub.action(ActionRequest.newBuilder().setOperation(CREATE).build()))
+        .mapToInt(reply -> Integer.parseInt(reply.getMessage()))
+        .forEach(id -> {
+            IntStream.range(0, concurrentThreadsPerUser).mapToObj(j -> id).forEach(usersId::add);
+        });
 
         return usersId;
     }

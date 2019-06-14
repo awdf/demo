@@ -31,7 +31,7 @@ public class WalletServer extends SpringBootServletInitializer {
 
     public static void main(String[] args) {
         if (args.length != 3) {
-            args = new String[]{"U10", "C2", "R10"};
+            args = new String[]{"U10", "C5", "R20"};
         }
 
         System.out.println("Arguments: ");

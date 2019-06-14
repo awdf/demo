@@ -1,10 +1,7 @@
 package com.example.demo.services.Impl;
 
 import com.example.demo.dao.AccountRepository;
-import com.example.demo.exceptions.InsufficientFundsException;
-import com.example.demo.exceptions.NoSuchAccountException;
-import com.example.demo.exceptions.NoSuchUserException;
-import com.example.demo.exceptions.UnknownCurrencyException;
+import com.example.demo.exceptions.*;
 import com.example.demo.models.Account;
 import com.example.demo.models.User;
 import com.example.demo.services.AccountManagmentService;
@@ -15,11 +12,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PreDestroy;
 import java.util.NoSuchElementException;
 
 @Service
 public class AccountManagmentServiceImpl implements AccountManagmentService {
     private static final Logger log = LoggerFactory.getLogger(AccountManagmentServiceImpl.class);
+    private final boolean instantWrite = false;
 
     @Autowired
     private AccountRepository repository;
@@ -29,6 +28,7 @@ public class AccountManagmentServiceImpl implements AccountManagmentService {
 
     @Autowired
     private UserManagmentService userService;
+
 
     @Override
     public void initService() {}
@@ -47,7 +47,7 @@ public class AccountManagmentServiceImpl implements AccountManagmentService {
         if (userNow != null) {
             account.setUser(userNow);
             userNow.getAccounts().put(cid, account);
-            repository.saveAndFlush(account);
+            repository.save(account);
         }
 
         return account;
@@ -87,7 +87,7 @@ public class AccountManagmentServiceImpl implements AccountManagmentService {
     }
 
     @Override
-    public void deposit(long user_id, long amount, String currency) throws UnknownCurrencyException, NoSuchUserException, NoSuchAccountException {
+    public void deposit(long user_id, long amount, String currency) throws UnknownCurrencyException, NoSuchUserException, NoSuchAccountException, AccountLimitReached {
         Long cid = currencyService.getIdByName(currency);
         User user = userService.getUserById(user_id);
 
@@ -96,8 +96,13 @@ public class AccountManagmentServiceImpl implements AccountManagmentService {
             throw new NoSuchAccountException();
         }
 
+
+        if (0 > Long.MAX_VALUE - account.getAmount() - Math.abs(amount)) {
+            throw new AccountLimitReached();
+        }
+
         account.setAmount(account.getAmount() + Math.abs(amount));
-        repository.saveAndFlush(account);
+        writeToRepository(account);
     }
 
     @Override
@@ -111,12 +116,28 @@ public class AccountManagmentServiceImpl implements AccountManagmentService {
         }
 
         long newAmount = account.getAmount() - Math.abs(amount);
-
-        if (newAmount >= 0) {
-            account.setAmount(newAmount);
-            repository.saveAndFlush(account);
-        } else {
+        if (0 > newAmount) {
             throw new InsufficientFundsException();
         }
+
+        account.setAmount(newAmount);
+        writeToRepository(account);
     }
+
+    @PreDestroy
+    public void onDestroy(){
+        repository.flush();
+        log.info("Account service shutdown");
+    }
+
+    private void writeToRepository(Account account){
+        if (isInstantWrite()) {
+            repository.save(account);
+        }
+    }
+
+    public boolean isInstantWrite() {
+        return instantWrite;
+    }
+
 }

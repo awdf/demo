@@ -32,11 +32,11 @@ public class User {
         return id;
     }
 
-    public long getAccount() {
+    public long getAccountTTL() {
         return account;
     }
 
-    public void setAccount(long account) {
+    public void setAccountTTL(long account) {
         this.account = account;
     }
 
@@ -56,7 +56,7 @@ public class User {
         User user = (User) o;
 
         if (getId() != user.getId()) return false;
-        if (getAccount() != user.getAccount()) return false;
+        if (getAccountTTL() != user.getAccountTTL()) return false;
         return getAccounts().equals(user.getAccounts());
 
     }
@@ -64,7 +64,7 @@ public class User {
     @Override
     public int hashCode() {
         int result = (int) (getId() ^ (getId() >>> 32));
-        result = 31 * result + (int) (getAccount() ^ (getAccount() >>> 32));
+        result = 31 * result + (int) (getAccountTTL() ^ (getAccountTTL() >>> 32));
         result = 31 * result + getAccounts().hashCode();
         return result;
     }

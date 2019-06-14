@@ -1,8 +1,10 @@
 package com.example.demo.Services;
 
 import com.example.demo.exceptions.InsufficientFundsException;
+import com.example.demo.exceptions.NoSuchAccountException;
 import com.example.demo.exceptions.NoSuchUserException;
 import com.example.demo.exceptions.UnknownCurrencyException;
+import com.example.demo.models.Currency;
 import com.example.demo.models.User;
 import com.example.demo.services.AccountManagmentService;
 import com.example.demo.services.CurrencyManagmentService;
@@ -21,6 +23,9 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
@@ -62,37 +67,55 @@ public class ServicesTest {
         long operations = 0;
         Instant start = Instant.now();
         do {
-            accounts.deposit(user.getId(), 100, GBP);
-            accounts.withdraw(user.getId(), 100, GBP);
+            accounts.deposit(user.getId(), 2, GBP);
+            accounts.withdraw(user.getId(), 1, GBP);
             accounts.balance(user.getId());
-            operations+=3;
+            operations++;
         } while (Duration.between(start, Instant.now()).toMillis() < 1000);
-        log.info("Service performance {} (ops): ", operations);
+        log.info("Service performance {} (DWB ops) per {} ms ", operations, Duration.between(start, Instant.now()).toMillis());
 
+        assertEquals(operations, parseBalance(user, GBP));
         users.removeUser(user.getId());
     }
 
     @Test
     @DisplayName("Service exceptions test")
-    public void exceptionsCheck() {
-        assertThrows(NoSuchUserException.class, () -> accounts.deposit(Long.MAX_VALUE, 1, GBP));
-        assertThrows(UnknownCurrencyException.class, () -> accounts.deposit(user_id, 1, "UAH"));
+    public void exceptionsCheck() throws NoSuchUserException {
+        final List<Currency> currencies = new LinkedList<>();
+        currencies.add(new Currency(1, GBP));
+        currencies.add(new Currency(2, EUR));
 
-        assertThrows(NoSuchUserException.class, () -> accounts.withdraw(Long.MAX_VALUE, 1, GBP));
-        assertThrows(UnknownCurrencyException.class, () -> accounts.withdraw(user_id, 1, "UAH"));
-        assertThrows(InsufficientFundsException.class, () -> accounts.withdraw(user_id, Long.MAX_VALUE, GBP));
+        User user = users.createUser(currencies);
+        long id = user.getId();
+
+        assertThrows(NoSuchUserException.class, () -> accounts.deposit(Long.MAX_VALUE, 0, GBP));
+        assertThrows(UnknownCurrencyException.class, () -> accounts.deposit(id, 0, "UAH"));
+
+        assertThrows(NoSuchUserException.class, () -> accounts.withdraw(Long.MAX_VALUE, 0, GBP));
+        assertThrows(UnknownCurrencyException.class, () -> accounts.withdraw(id, 0, "UAH"));
+        assertThrows(InsufficientFundsException.class, () -> accounts.withdraw(id, Long.MAX_VALUE, GBP));
+        assertThrows(NoSuchAccountException.class, () -> accounts.withdraw(user.getId(), 0, USD));
 
         assertThrows(NoSuchUserException.class, () -> accounts.balance(Long.MAX_VALUE));
+
+        users.removeUser(user.getId());
     }
 
     @TestFactory
     @DisplayName("Sequence of actions test")
-    Collection<DynamicTest> accountsActions() throws NoSuchUserException {
+    Collection<DynamicTest> accountsActions() throws NoSuchUserException, UnknownCurrencyException {
 
         assertNotNull(users);
         assertNotNull(accounts);
+        assertNotNull(currency);
 
         User user = users.getUserById(user_id);
+        long balanceGBP = user.getAccounts().get(currency.getIdByName(GBP)).getAmount();
+        long balanceEUR = user.getAccounts().get(currency.getIdByName(EUR)).getAmount();
+        long balanceUSD = user.getAccounts().get(currency.getIdByName(USD)).getAmount();
+        assertEquals(0L, balanceGBP); //Remove for non Zero amount
+        assertEquals(0L, balanceEUR); //Remove for non Zero amount
+        assertEquals(0L, balanceUSD); //Remove for non Zero amount
 
         return Arrays.asList(
             dynamicTest("1.Make a withdrawal of USD 200",
@@ -107,9 +130,9 @@ public class ServicesTest {
 
             dynamicTest("3.Check that all balances are correct",
                 ()-> assertAll("userBalancesCheck1",
-                    ()-> assertTrue(balanceCheck(user, 0, GBP)),
-                    ()-> assertTrue(balanceCheck(user, 0, EUR)),
-                    ()-> assertTrue(balanceCheck(user, 100, USD))
+                    ()-> assertEquals(balanceGBP + 000, parseBalance(user, GBP)),
+                    ()-> assertEquals(balanceEUR + 000, parseBalance(user, EUR)),
+                    ()-> assertEquals(balanceUSD + 100, parseBalance(user, USD))
                 )),
 
 
@@ -126,9 +149,9 @@ public class ServicesTest {
 
             dynamicTest("6. Check that all balances are correct",
                 ()-> assertAll("userBalancesCheck2",
-                        ()-> assertTrue(balanceCheck(user, 0, GBP)),
-                        ()-> assertTrue(balanceCheck(user, 100, EUR)),
-                        ()-> assertTrue(balanceCheck(user, 100, USD))
+                        ()-> assertEquals(balanceGBP + 000, parseBalance(user, GBP)),
+                        ()-> assertEquals(balanceEUR + 100, parseBalance(user, EUR)),
+                        ()-> assertEquals(balanceUSD + 100, parseBalance(user, USD))
                 )),
 
 
@@ -145,9 +168,9 @@ public class ServicesTest {
 
             dynamicTest("9. Check that all balances are correct",
                 ()-> assertAll("userBalancesCheck3",
-                        ()-> assertTrue(balanceCheck(user, 0, GBP)),
-                        ()-> assertTrue(balanceCheck(user, 100, EUR)),
-                        ()-> assertTrue(balanceCheck(user, 200, USD))
+                        ()-> assertEquals(balanceGBP + 000, parseBalance(user, GBP)),
+                        ()-> assertEquals(balanceEUR + 100, parseBalance(user, EUR)),
+                        ()-> assertEquals(balanceUSD + 200, parseBalance(user, USD))
                 )),
 
 
@@ -159,24 +182,28 @@ public class ServicesTest {
 
             dynamicTest("11. Check that all balances are correct",
                 ()-> assertAll("userBalancesCheck4",
-                        ()-> assertTrue(balanceCheck(user, 0, GBP)),
-                        ()-> assertTrue(balanceCheck(user, 100, EUR)),
-                        ()-> assertTrue(balanceCheck(user, 0, USD))
+                        ()-> assertEquals(balanceGBP + 000, parseBalance(user, GBP)),
+                        ()-> assertEquals(balanceEUR + 100, parseBalance(user, EUR)),
+                        ()-> assertEquals(balanceUSD + 000, parseBalance(user, USD))
                 )),
 
 
 
             dynamicTest("12. Make a withdrawal of USD 200",
-                ()-> assertThrows(InsufficientFundsException.class, () -> accounts.withdraw(user_id, 200, USD)))
+                ()-> assertThrows(InsufficientFundsException.class, () -> accounts.withdraw(user_id, 200, USD))),
+
+
+
+            dynamicTest("Keep clean",
+                    () -> accounts.withdraw(user_id, 100, EUR))
         );
 
     }
 
-    private boolean balanceCheck(User user, int delta, String currencyName) throws Exception {
-        Long cid = currency.getIdByName(currencyName);
-        Long newAmount = user.getAccounts().get(cid).getAmount() + delta;
+    private long parseBalance(User user, String currencyName) throws Exception {
+        int cid = currency.getIdByName(currencyName).intValue();
         String balance = accounts.balance(user.getId());
-        String newBalance = String.format(" %d %s", newAmount, currency.getNameById(cid));
-        return balance.contains(newBalance);
+        String[] split = balance.replaceAll("#\\d+,|[A-Za-z,\\s]", "").split(":");
+        return Long.parseLong(split[cid]);
     }
 }

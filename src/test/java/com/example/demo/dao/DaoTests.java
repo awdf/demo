@@ -92,12 +92,12 @@ public class DaoTests {
             User user = new User(3L, accounts);
             accounts.forEach((c, account) -> account.setUser(user));
 
-            User created = users.saveAndFlush(user);
+            User created = users.save(user);
             Account any = created.getAccounts().get(1l);
             any.setAmount(1000);
-            users.saveAndFlush(created);
-            users.deleteById(created.getId());
+            users.save(created);
+            users.delete(created);
         } while (Duration.between(start, Instant.now()).toMillis() < 1000);
-        log.info("CRUD Performance {} (ops): ", operations);
+        log.info("CRUD performance {} (ops) per {} ms", operations, Duration.between(start, Instant.now()).toMillis());
     }
 }

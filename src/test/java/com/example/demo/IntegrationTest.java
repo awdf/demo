@@ -6,6 +6,7 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.slf4j.Logger;
@@ -32,6 +33,7 @@ public class IntegrationTest {
     private static ManagedChannel channel;
     private static WalletGrpc.WalletBlockingStub stub;
     private static final Pattern PATTERN = Pattern.compile("(\\S+|\\s)+");
+    private int user_id = -1;
 
     @BeforeAll
     static void channelUp(){
@@ -41,6 +43,17 @@ public class IntegrationTest {
         stub = WalletGrpc.newBlockingStub(channel);
     }
 
+    @BeforeEach
+    public void createUser(){
+        if (user_id < 0) {
+            ActionRequest request = ActionRequest.newBuilder()
+                    .setOperation(CREATE)
+                    .build();
+
+            user_id = Integer.parseInt(stub.action(request).getMessage());
+        }
+    }
+
     @ParameterizedTest
     @ValueSource(ints = {-100, 0, 100})
     public void deposit(int amount){
@@ -48,7 +61,7 @@ public class IntegrationTest {
                 .setOperation(DEPOSIT)
                 .setCurrency(GBP)
                 .setAmount(amount)
-                .setUser(1)
+                .setUser(user_id)
                 .build();
 
         assertEquals("done", stub.action(request).getMessage());
@@ -62,10 +75,10 @@ public class IntegrationTest {
         .setOperation(WITHDRAW)
         .setCurrency(GBP)
         .setAmount(amount)
-        .setUser(1)
+        .setUser(user_id)
         .build();
 
-        assertEquals("done", stub.action(request).getMessage());
+        assertTrue(PATTERN.matcher(stub.action(request).getMessage()).matches());
     }
 
     @ParameterizedTest
@@ -90,7 +103,7 @@ public class IntegrationTest {
             operations++;
             assertEquals(stub.action(request).getMessage(), "pong");
         } while (Duration.between(start, Instant.now()).toMillis() < duration);
-        log.info("gRPC Performance {} (ops): ", operations);
+        log.info("gRPC Performance {} (ops) per {} ms ", operations, Duration.between(start, Instant.now()).toMillis() );
     }
 
     @AfterAll
