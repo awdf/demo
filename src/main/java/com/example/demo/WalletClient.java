@@ -12,6 +12,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -95,6 +97,7 @@ public class WalletClient {
     }
 
     private void doWork(List<Integer> usersId) {
+        Instant start = Instant.now();
 
         ExecutorService executor = Executors.newFixedThreadPool(users * concurrentThreadsPerUser);
         List<CompletableFuture<Boolean>> futures = usersId.stream()
@@ -106,6 +109,10 @@ public class WalletClient {
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()]))
                 .thenRun(() -> futures.forEach((cf) -> {assert cf.getNow(false);}))
                 .join();
+
+        Instant finish = Instant.now();
+
+        log.info("Threads execution time " + Duration.between(start, finish).toMillis());
 
         executor.shutdown();
     }

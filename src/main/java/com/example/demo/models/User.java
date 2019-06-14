@@ -3,7 +3,7 @@ package com.example.demo.models;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.Map;
 
 @Entity
 @Table(name = "users")
@@ -17,12 +17,13 @@ public class User {
     private long account;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Account> accounts;
+    @MapKey(name="currency")
+    private Map<Long, Account> accounts;
 
     protected User() {
     }
 
-    public User(long account, List<Account> accounts) {
+    public User(long account, Map<Long, Account> accounts) {
         this.account = account;
         this.accounts = accounts;
     }
@@ -39,12 +40,33 @@ public class User {
         this.account = account;
     }
 
-    public List<Account> getAccounts() {
+    public Map<Long, Account> getAccounts() {
         return accounts;
     }
 
-    public void setAccounts(List<Account> accounts) {
+    public void setAccounts(Map<Long, Account> accounts) {
         this.accounts = accounts;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        User user = (User) o;
+
+        if (getId() != user.getId()) return false;
+        if (getAccount() != user.getAccount()) return false;
+        return getAccounts().equals(user.getAccounts());
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (getId() ^ (getId() >>> 32));
+        result = 31 * result + (int) (getAccount() ^ (getAccount() >>> 32));
+        result = 31 * result + getAccounts().hashCode();
+        return result;
     }
 
     @Override

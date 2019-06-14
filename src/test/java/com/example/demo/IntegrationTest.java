@@ -4,20 +4,22 @@ import com.example.demo.server.ActionRequest;
 import com.example.demo.server.WalletGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import org.junit.Test;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
+import static com.example.demo.server.ActionRequest.Currency.GBP;
 import static com.example.demo.server.ActionRequest.Operation.*;
-import static com.example.demo.server.ActionRequest.Currency.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -25,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest
 @AutoConfigureTestDatabase(replace= AutoConfigureTestDatabase.Replace.NONE)
 public class IntegrationTest {
+    private static final Logger log = LoggerFactory.getLogger(IntegrationTest.class);
 
     private static ManagedChannel channel;
     private static WalletGrpc.WalletBlockingStub stub;
@@ -74,6 +77,20 @@ public class IntegrationTest {
                 .build();
 
         assertTrue(PATTERN.matcher(stub.action(request).getMessage()).matches());
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {1000})
+    public void PerformanceTest(int duration){
+        ActionRequest request = ActionRequest.newBuilder().setOperation(PING).build();
+
+        long operations = 0;
+        Instant start = Instant.now();
+        do {
+            operations++;
+            assertEquals(stub.action(request).getMessage(), "pong");
+        } while (Duration.between(start, Instant.now()).toMillis() < duration);
+        log.info("gRPC Performance {} (ops): ", operations);
     }
 
     @AfterAll

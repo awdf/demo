@@ -1,10 +1,7 @@
 package com.example.demo.services;
 
-import com.example.demo.exceptions.NoSuchUserException;
 import com.example.demo.models.Account;
 import com.example.demo.models.User;
-
-import java.util.List;
 
 public interface AccountManagmentService extends BaseService {
 

@@ -2,6 +2,7 @@ package com.example.demo.services.Impl;
 
 import com.example.demo.dao.AccountRepository;
 import com.example.demo.exceptions.InsufficientFundsException;
+import com.example.demo.exceptions.NoSuchAccountException;
 import com.example.demo.exceptions.NoSuchUserException;
 import com.example.demo.exceptions.UnknownCurrencyException;
 import com.example.demo.models.Account;
@@ -35,23 +36,25 @@ public class AccountManagmentServiceImpl implements AccountManagmentService {
     @Override
     public Account createAccount(User user, String currency_name) throws UnknownCurrencyException, NoSuchUserException {
 
-        Long currency = currencyService.getByName(currency_name);
-        if (currency==null) {
+        Long cid = currencyService.getIdByName(currency_name);
+        if (cid==null) {
             throw new UnknownCurrencyException();
         }
-        Account account = new Account(0, currency);
+        Account account = new Account(0, cid);
 
 
         User userNow = userService.getUserById(user.getId());
         if (userNow != null) {
             account.setUser(userNow);
-            repository.save(account);
+            userNow.getAccounts().put(cid, account);
+            repository.saveAndFlush(account);
         }
 
         return account;
     }
 
     @Override
+    @Deprecated
     public Account getById(long id){
         try {
             return repository.findById(id).get();
@@ -61,6 +64,7 @@ public class AccountManagmentServiceImpl implements AccountManagmentService {
     }
 
     @Override
+    @Deprecated
     public void removeAccount(long id) {
         repository.deleteById(id);
     }
@@ -68,56 +72,51 @@ public class AccountManagmentServiceImpl implements AccountManagmentService {
     @Override
     public String balance(long user_id) throws NoSuchUserException {
         User user = userService.getUserById(user_id);
-        if (user != null) {
-            StringBuffer result = new StringBuffer();
 
-            user.getAccounts().forEach((account)->{
-                result.append(String.format("Account #%d, Balance: %d %s ", account.getId(), account.getAmount(), currencyService.getById(account.getCurrency())));
+        StringBuffer result = new StringBuffer();
+        user.getAccounts().forEach((cid, account)-> {
+            try {
+                result.append(String.format("Account #%d, Balance: %d %s ", account.getId(), account.getAmount(), currencyService.getNameById(cid)));
                 result.append(System.lineSeparator());
-            });
+            } catch (UnknownCurrencyException e) {
+                e.printStackTrace();
+            }
+        });
 
-            return result.toString();
-        }
-
-        throw new NoSuchUserException();
+        return result.toString();
     }
 
     @Override
-    public void deposit(long user_id, long amount, String currency) throws UnknownCurrencyException, NoSuchUserException {
-        Long cid = currencyService.getByName(currency);
-        if (cid == null) {
-            throw new UnknownCurrencyException();
+    public void deposit(long user_id, long amount, String currency) throws UnknownCurrencyException, NoSuchUserException, NoSuchAccountException {
+        Long cid = currencyService.getIdByName(currency);
+        User user = userService.getUserById(user_id);
+
+        Account account = user.getAccounts().get(cid);
+        if (account == null) {
+            throw new NoSuchAccountException();
         }
 
-        User user = userService.getUserById(user_id);
-        user.getAccounts().forEach((account -> {
-            if (account.getCurrency() == cid) {
-                account.setAmount(account.getAmount() + Math.abs(amount));
-                repository.saveAndFlush(account);
-            }
-        }));
+        account.setAmount(account.getAmount() + Math.abs(amount));
+        repository.saveAndFlush(account);
     }
 
     @Override
-    public void withdraw(long user_id, long amount, String currency) throws UnknownCurrencyException, InsufficientFundsException, NoSuchUserException {
-        Long cid = currencyService.getByName(currency);
-        if (cid == null) {
-            throw new UnknownCurrencyException();
-        }
-
+    public void withdraw(long user_id, long amount, String currency) throws UnknownCurrencyException, InsufficientFundsException, NoSuchUserException, NoSuchAccountException {
+        Long cid = currencyService.getIdByName(currency);
         User user = userService.getUserById(user_id);
 
-        for (Account account : user.getAccounts()) {
-            if (account.getCurrency() == cid) {
-                long newAmount = account.getAmount() - Math.abs(amount);
+        Account account = user.getAccounts().get(cid);
+        if (account == null) {
+            throw new NoSuchAccountException();
+        }
 
-                if (newAmount >= 0) {
-                    account.setAmount(newAmount);
-                    repository.saveAndFlush(account);
-                } else {
-                    throw new InsufficientFundsException();
-                }
-            }
+        long newAmount = account.getAmount() - Math.abs(amount);
+
+        if (newAmount >= 0) {
+            account.setAmount(newAmount);
+            repository.saveAndFlush(account);
+        } else {
+            throw new InsufficientFundsException();
         }
     }
 }

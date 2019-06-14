@@ -39,6 +39,25 @@ public class Currency {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Currency currency = (Currency) o;
+
+        if (getId() != currency.getId()) return false;
+        return getName().equals(currency.getName());
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (getId() ^ (getId() >>> 32));
+        result = 31 * result + getName().hashCode();
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "Currency{" +
                 "ID=" + id +

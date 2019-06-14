@@ -1,10 +1,12 @@
 package com.example.demo.services.Impl;
 
 import com.example.demo.dao.CurrencyRepository;
+import com.example.demo.exceptions.UnknownCurrencyException;
 import com.example.demo.models.Currency;
 import com.example.demo.services.CurrencyManagmentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -33,7 +35,8 @@ public class CurrencyManagmentServiceImpl implements CurrencyManagmentService {
     }
 
     @PostConstruct
-    private void build(){
+    @Scheduled(initialDelay=10000, fixedRate = 10000)
+    private void  synchronize(){
         log.info("Currencies found with findAll():");
         log.info("-------------------------------");
 
@@ -54,13 +57,21 @@ public class CurrencyManagmentServiceImpl implements CurrencyManagmentService {
     }
 
     @Override
-    public String getById(long id){
-        return dictionary_id.get(id);
+    public String getNameById(long id) throws UnknownCurrencyException {
+        String name = dictionary_id.get(id);
+        if (name == null) {
+            throw new UnknownCurrencyException();
+        }
+        return name;
     }
 
     @Override
-    public Long getByName(String name) {
-        return dictionary_name.get(name);
+    public Long getIdByName(String name) throws UnknownCurrencyException {
+        Long cid = dictionary_name.get(name);
+        if (cid == null) {
+            throw new UnknownCurrencyException();
+        }
+        return cid;
     }
 
     @Override

@@ -58,6 +58,26 @@ public class Account {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Account account = (Account) o;
+
+        if (getId() != account.getId()) return false;
+        if (getAmount() != account.getAmount()) return false;
+        return getCurrency() == account.getCurrency();
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (getId() ^ (getId() >>> 32));
+        result = 31 * result + (int) (getAmount() ^ (getAmount() >>> 32));
+        result = 31 * result + (int) (getCurrency() ^ (getCurrency() >>> 32));
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "Account{" +
                 "id=" + id +

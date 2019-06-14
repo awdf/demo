@@ -37,6 +37,9 @@ public class GrpcServerServiceImpl extends WalletGrpc.WalletImplBase implements 
         String message = "done";
         try {
             switch (request.getOperation()){
+                case PING:
+                    message = "pong";
+                    break;
                 case BALANCE:
                     message = accountService.balance(request.getUser());
                     break;

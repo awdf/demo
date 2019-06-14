@@ -13,11 +13,13 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import javax.annotation.PostConstruct;
 import java.util.Arrays;
 
 @SpringBootApplication
+@EnableScheduling
 @EnableJpaAuditing
 public class WalletServer extends SpringBootServletInitializer {
     private static final Logger log = LoggerFactory.getLogger(WalletServer.class);
@@ -29,7 +31,7 @@ public class WalletServer extends SpringBootServletInitializer {
 
     public static void main(String[] args) {
         if (args.length != 3) {
-            args = new String[]{"U10", "C2", "R3"};
+            args = new String[]{"U10", "C2", "R10"};
         }
 
         System.out.println("Arguments: ");

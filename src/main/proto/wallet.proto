@@ -29,10 +29,11 @@ message ActionRequest {
     Currency currency = 3;
 
     enum Operation{
-        BALANCE = 0;
-        DEPOSIT = 1;
-        WITHDRAW = 2;
-        CREATE=3;
+        PING=0;
+        BALANCE = 1;
+        DEPOSIT = 2;
+        WITHDRAW = 3;
+        CREATE=4;
     }
     Operation operation = 4;
 }
