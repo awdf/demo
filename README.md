@@ -1,6 +1,7 @@
-#demo
+# demo
+
 Simple wallet client-server realization. The main idea - "no magic!"
-###Technologies stack
+### Technologies stack
     • Java 8+ 
     • Spring 5.x
     • gRPC
@@ -9,7 +10,7 @@ Simple wallet client-server realization. The main idea - "no magic!"
     • JUnit
     • Hibernate
     • Spring Boot 2.x
-###How to run
+### How to run
     • Download the repository code
     • Import **demo.sql** to your MySQL 5.x DB on localhost:3306
     • In console run    
@@ -17,12 +18,12 @@ Simple wallet client-server realization. The main idea - "no magic!"
 ./gradlew bootRun --args="U10 C5 R10"
 ` 
     
-#####Where:
+##### Where:
 * U10 - Client will emulate 10 users
 * C5  - Amount of threads per user
 * R10 - Sequence of single thread rounds
 
-#####Rounds
+##### Rounds
 Decision about which round will be used makes randomly. There is 3 predefined Round sequences:
 
 * A 
@@ -49,7 +50,7 @@ Decision about which round will be used makes randomly. There is 3 predefined Ro
     * Withdraw 200 USD
     * Get Balance
     
-###Interactions
+### Interactions
 Let me tell you how it works inside. At start of application creates Spring Boot application context _com.example.demo.WalletServer_
 with gRPC server as communication service _com.example.demo.services.Impl.GrpcServerServiceImpl_. 
 
