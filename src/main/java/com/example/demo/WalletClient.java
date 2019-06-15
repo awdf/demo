@@ -91,7 +91,7 @@ public class WalletClient {
         this.doWork(users);
         this.shutdown();
 
-        log.info("User planned actions {}", plannedActions);
+        log.info("Users planned actions {}", plannedActions);
         System.exit(0);
     }
 
@@ -133,7 +133,7 @@ public class WalletClient {
 
         Instant finish = Instant.now();
 
-        log.info("Threads execution time " + Duration.between(start, finish).toMillis());
+        log.info("Threads execution time {} ms", Duration.between(start, finish).toMillis());
 
         executor.shutdown();
     }
@@ -146,7 +146,7 @@ public class WalletClient {
         for (int i = 0; i < roundsPerThread; i++) {
             actions.addAll(getRoundCollection(user_id, Round.getAnyOne()));
         }
-        log.info("User {} action list length {}", user_id, actions.size());
+        log.info("User ID:{} action list length {}", user_id, actions.size());
         plannedActions += actions.size();
 
         //Emulate user next
