@@ -35,7 +35,9 @@ public class GrpcServerServiceImpl extends WalletGrpc.WalletImplBase implements 
 
     @Override
     public void action(ActionRequest request, StreamObserver<ActionReply> responseObserver) {
-        log.debug("Request {} received {} ", ++counter, request.getOperation().name());
+        synchronized (this) {
+            log.debug("Request {} received {} ", ++counter, request.getOperation().name());
+        }
 
         String message = "done";
         try {
@@ -71,7 +73,7 @@ public class GrpcServerServiceImpl extends WalletGrpc.WalletImplBase implements 
 
     @PreDestroy
     public void onDestroy(){
-        log.info("gRPC service total {}", counter);
+        log.info("gRPC service processed {} messages", counter);
     }
 
     @Override

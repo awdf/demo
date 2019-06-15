@@ -1,7 +1,12 @@
 package com.example.demo;
 
+import com.example.demo.server.ActionReply;
 import com.example.demo.server.ActionRequest;
 import com.example.demo.server.WalletGrpc;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import org.junit.jupiter.api.AfterAll;
@@ -31,7 +36,8 @@ public class IntegrationTest {
     private static final Logger log = LoggerFactory.getLogger(IntegrationTest.class);
 
     private static ManagedChannel channel;
-    private static WalletGrpc.WalletBlockingStub stub;
+    private static WalletGrpc.WalletBlockingStub bstub;
+    private static WalletGrpc.WalletFutureStub fstub;
     private static final Pattern PATTERN = Pattern.compile("(\\S+|\\s)+");
     private int user_id = -1;
 
@@ -40,7 +46,8 @@ public class IntegrationTest {
         channel = ManagedChannelBuilder.forAddress("localhost", 6565)
                 .usePlaintext()
                 .build();
-        stub = WalletGrpc.newBlockingStub(channel);
+        bstub = WalletGrpc.newBlockingStub(channel);
+        fstub = WalletGrpc.newFutureStub(channel);
     }
 
     @BeforeEach
@@ -50,7 +57,7 @@ public class IntegrationTest {
                     .setOperation(CREATE)
                     .build();
 
-            user_id = Integer.parseInt(stub.action(request).getMessage());
+            user_id = Integer.parseInt(bstub.action(request).getMessage());
         }
     }
 
@@ -64,7 +71,7 @@ public class IntegrationTest {
                 .setUser(user_id)
                 .build();
 
-        assertEquals("done", stub.action(request).getMessage());
+        assertEquals("done", bstub.action(request).getMessage());
     }
 
 
@@ -78,7 +85,7 @@ public class IntegrationTest {
         .setUser(user_id)
         .build();
 
-        assertTrue(PATTERN.matcher(stub.action(request).getMessage()).matches());
+        assertTrue(PATTERN.matcher(bstub.action(request).getMessage()).matches());
     }
 
     @ParameterizedTest
@@ -89,7 +96,7 @@ public class IntegrationTest {
                 .setUser(user_id)
                 .build();
 
-        assertTrue(PATTERN.matcher(stub.action(request).getMessage()).matches());
+        assertTrue(PATTERN.matcher(bstub.action(request).getMessage()).matches());
     }
 
     @ParameterizedTest
@@ -101,13 +108,28 @@ public class IntegrationTest {
         Instant start = Instant.now();
         do {
             operations++;
-            assertEquals(stub.action(request).getMessage(), "pong");
+            ListenableFuture<ActionReply> reply = fstub.action(request);
+            Futures.addCallback(reply, new Callback(), MoreExecutors.directExecutor());
         } while (Duration.between(start, Instant.now()).toMillis() < duration);
-        log.info("gRPC Performance {} (ops) per {} ms ", operations, Duration.between(start, Instant.now()).toMillis() );
+        log.info("gRPC performance {} (ops) per {} ms ", operations, Duration.between(start, Instant.now()).toMillis() );
     }
 
     @AfterAll
     static void channelDown() throws InterruptedException {
         channel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
+    }
+}
+
+class Callback implements FutureCallback<ActionReply> {
+    private static final Logger log = LoggerFactory.getLogger(Callback.class);
+
+    @Override
+    public void onSuccess(ActionReply result) {
+        log.debug(result.getMessage());
+    }
+
+    @Override
+    public void onFailure(Throwable t) {
+        log.error("Concurrency issue", t);
     }
 }

@@ -39,9 +39,14 @@ public class WalletClient {
     //number of rounds each thread is executing
     private static int roundsPerThread = 1;
 
+    //Client planned actions counter
+    private static long plannedActions = users; //Create user action is planned
+
     //Manage gRPC channel
     private final ManagedChannel channel;
-    private final WalletGrpc.WalletBlockingStub stub;
+    private final WalletGrpc.WalletBlockingStub bstub;
+    private final WalletGrpc.WalletFutureStub fstub;
+
 
     enum Round {
         A(1),B(2),C(3);
@@ -62,14 +67,13 @@ public class WalletClient {
     }
 
     public WalletClient() {
-        // we should get this info from a service like eureka
+        // Channels are secure by default (via SSL/TLS).
+        // For the best results we disable TLS to avoid security delays.
         this.channel = ManagedChannelBuilder.forAddress("localhost", 6565)
-                // Channels are secure by default (via SSL/TLS).
-                // For the example we disable TLS to avoid needing certificates.
                 .usePlaintext()
                 .build();
-        this.stub = WalletGrpc.newBlockingStub(channel);
-
+        this.bstub = WalletGrpc.newBlockingStub(channel);
+        this.fstub = WalletGrpc.newFutureStub(channel);
     }
 
     private void shutdown() throws InterruptedException {
@@ -77,18 +81,30 @@ public class WalletClient {
     }
 
     @EventListener(ApplicationReadyEvent.class)
-    public void startup() throws InterruptedException {
+    public void walletClientRun() throws InterruptedException {
+        /* Client execution plan:
+        1. Create users
+        2. Emulate users work
+        3. Finish client
+        */
         List<Integer> users = createUsers();
         this.doWork(users);
         this.shutdown();
+
+        log.info("User planned actions {}", plannedActions);
         System.exit(0);
     }
 
     private List<Integer> createUsers(){
+        //List with user IDs that reserve pool thread.
+        // One ID per thread.
         List<Integer> usersId = new LinkedList<>();
 
+        //According to Client requirements will do both
+        // create users [0..users] and
+        // reserve [0..concurrentThreadsPerUser] pool threads for each user.
         IntStream.range(0, users)
-        .mapToObj(n -> stub.action(ActionRequest.newBuilder().setOperation(CREATE).build()))
+        .mapToObj(n -> bstub.action(ActionRequest.newBuilder().setOperation(CREATE).build()))
         .mapToInt(reply -> Integer.parseInt(reply.getMessage()))
         .forEach(id -> {
             IntStream.range(0, concurrentThreadsPerUser).mapToObj(j -> id).forEach(usersId::add);
@@ -100,13 +116,17 @@ public class WalletClient {
     private void doWork(List<Integer> usersId) {
         Instant start = Instant.now();
 
+        //Create thread pool
         ExecutorService executor = Executors.newFixedThreadPool(users * concurrentThreadsPerUser);
+
+        //Starts user work emulation with concurrency
         List<CompletableFuture<Boolean>> futures = usersId.stream()
                 .map(f -> CompletableFuture.completedFuture(f)
                         .thenApplyAsync(this::userEmulation, executor)
                 )
                 .collect(Collectors.toList());
 
+        //Checks that all have been well
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()]))
                 .thenRun(() -> futures.forEach((cf) -> {assert cf.getNow(false);}))
                 .join();
@@ -119,18 +139,25 @@ public class WalletClient {
     }
 
     private boolean userEmulation(Integer user_id){
-        if (user_id == null) return true;
+        if (user_id == null) return false;
 
+        //Get user rounds randomly
         List<ActionRequest> actions = new LinkedList<>();
-
         for (int i = 0; i < roundsPerThread; i++) {
             actions.addAll(getRoundCollection(user_id, Round.getAnyOne()));
         }
         log.info("User {} action list length {}", user_id, actions.size());
+        plannedActions += actions.size();
 
-        actions.stream().map((action)->stub.action(action).getMessage())
-                .collect(Collectors.toList());
-//                .forEach(log::info);
+        //Emulate user next
+
+        //Blocking stub usage too slow
+//        actions.stream().map((action)->bstub.action(action).getMessage())
+//                .collect(Collectors.toList())
+//                .forEach(log::debug);
+
+        //Future stub is much faster
+        actions.stream().forEach(fstub::action);
 
         return true;
     }
@@ -138,6 +165,7 @@ public class WalletClient {
     private List<ActionRequest> getRoundCollection(int user, Round round) {
         List<ActionRequest> collection = new LinkedList<>();
 
+        //Prepared user action rounds
         switch (round){
             case A:
                 collection.add(ActionRequest.newBuilder().setOperation(DEPOSIT).setAmount(100).setCurrency(USD).setUser(user).build());
@@ -171,6 +199,8 @@ public class WalletClient {
 
     public static void setUsers(int users) {
         WalletClient.users = users;
+        //For each user will send CREATE action
+        WalletClient.plannedActions = users;
     }
 
     static void setConcurrentThreadsPerUser(int concurrentThreadsPerUser) {
