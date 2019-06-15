@@ -74,7 +74,7 @@ After this, you will see server total calculation of messages, it has processed:
 
 That is all.
 
-###Testing
+### Testing
 You can do tests by shell command:
 
 `./gradlew check`
