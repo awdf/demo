@@ -1,6 +1,6 @@
 # demo
-
 Simple wallet client-server realization. The main idea - "no magic!"
+
 ### Technologies stack
     • Java 8+ 
     • Spring 5.x
@@ -10,10 +10,11 @@ Simple wallet client-server realization. The main idea - "no magic!"
     • JUnit
     • Hibernate
     • Spring Boot 2.x
+
 ### How to run
-    • Download the repository code
-    • Import **demo.sql** to your MySQL 5.x DB on localhost:3306
-    • In console run    
+* Download the repository code
+* Import **demo.sql** to your MySQL 5.x DB on localhost:3306
+* In console run    
 `
 ./gradlew bootRun --args="U10 C5 R10"
 ` 
