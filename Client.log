@@ -1,0 +1,136 @@
+ 
+13:15:49: Executing task 'bootRun'...
+
+> Task :extractIncludeProto UP-TO-DATE
+> Task :extractProto UP-TO-DATE
+> Task :generateProto UP-TO-DATE
+> Task :compileJava UP-TO-DATE
+> Task :processResources UP-TO-DATE
+> Task :classes UP-TO-DATE
+
+> Task :bootRun
+Arguments: 
+U10
+C5
+R200
+The Class-Path manifest attribute in /home/awdf/.gradle/caches/modules-2/files-2.1/io.grpc/grpc-netty-shaded/1.21.0/bb9b1bd872f803d53254af6b5aeaa665b67bd75c/grpc-netty-shaded-1.21.0.jar referenced one or more files that do not exist: file:/home/awdf/.gradle/caches/modules-2/files-2.1/io.grpc/grpc-netty-shaded/1.21.0/bb9b1bd872f803d53254af6b5aeaa665b67bd75c/grpc-core-1.21.0.jar,file:/home/awdf/.gradle/caches/modules-2/files-2.1/io.grpc/grpc-netty-shaded/1.21.0/bb9b1bd872f803d53254af6b5aeaa665b67bd75c/opencensus-contrib-grpc-metrics-0.21.0.jar,file:/home/awdf/.gradle/caches/modules-2/files-2.1/io.grpc/grpc-netty-shaded/1.21.0/bb9b1bd872f803d53254af6b5aeaa665b67bd75c/opencensus-api-0.21.0.jar,file:/home/awdf/.gradle/caches/modules-2/files-2.1/io.grpc/grpc-netty-shaded/1.21.0/bb9b1bd872f803d53254af6b5aeaa665b67bd75c/grpc-api-1.21.0.jar,file:/home/awdf/.gradle/caches/modules-2/files-2.1/io.grpc/grpc-netty-shaded/1.21.0/bb9b1bd872f803d53254af6b5aeaa665b67bd75c/gson-2.7.jar,file:/home/awdf/.gradle/caches/modules-2/files-2.1/io.grpc/grpc-netty-shaded/1.21.0/bb9b1bd872f803d53254af6b5aeaa665b67bd75c/annotations-4.1.1.4.jar,file:/home/awdf/.gradle/caches/modules-2/files-2.1/io.grpc/grpc-netty-shaded/1.21.0/bb9b1bd872f803d53254af6b5aeaa665b67bd75c/grpc-context-1.21.0.jar,file:/home/awdf/.gradle/caches/modules-2/files-2.1/io.grpc/grpc-netty-shaded/1.21.0/bb9b1bd872f803d53254af6b5aeaa665b67bd75c/error_prone_annotations-2.3.2.jar,file:/home/awdf/.gradle/caches/modules-2/files-2.1/io.grpc/grpc-netty-shaded/1.21.0/bb9b1bd872f803d53254af6b5aeaa665b67bd75c/jsr305-3.0.2.jar,file:/home/awdf/.gradle/caches/modules-2/files-2.1/io.grpc/grpc-netty-shaded/1.21.0/bb9b1bd872f803d53254af6b5aeaa665b67bd75c/animal-sniffer-annotations-1.17.jar,file:/home/awdf/.gradle/caches/modules-2/files-2.1/io.grpc/grpc-netty-shaded/1.21.0/bb9b1bd872f803d53254af6b5aeaa665b67bd75c/guava-26.0-android.jar,file:/home/awdf/.gradle/caches/modules-2/files-2.1/io.grpc/grpc-netty-shaded/1.21.0/bb9b1bd872f803d53254af6b5aeaa665b67bd75c/checker-compat-qual-2.5.2.jar,file:/home/awdf/.gradle/caches/modules-2/files-2.1/io.grpc/grpc-netty-shaded/1.21.0/bb9b1bd872f803d53254af6b5aeaa665b67bd75c/j2objc-annotations-1.1.jar
+Arguments: 
+U10
+C5
+R200
+2019-06-15 13:15:50.704  INFO 11792 --- [  restartedMain] com.example.demo.WalletServer            : Starting WalletServer on awdf-HP-ProBook-4540s with PID 11792 (/home/awdf/workspace/demo/build/classes/java/main started by awdf in /home/awdf/workspace/demo)
+2019-06-15 13:15:50.705  INFO 11792 --- [  restartedMain] com.example.demo.WalletServer            : The following profiles are active: work
+2019-06-15 13:15:50.733  INFO 11792 --- [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2019-06-15 13:15:50.733  INFO 11792 --- [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2019-06-15 13:15:51.281  INFO 11792 --- [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data repositories in DEFAULT mode.
+2019-06-15 13:15:51.342  INFO 11792 --- [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 56ms. Found 3 repository interfaces.
+2019-06-15 13:15:51.613  INFO 11792 --- [  restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$1cc37e97] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-06-15 13:15:51.732  INFO 11792 --- [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2019-06-15 13:15:51.838  INFO 11792 --- [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2019-06-15 13:15:51.873  INFO 11792 --- [  restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [
+	name: default
+	...]
+2019-06-15 13:15:51.960  INFO 11792 --- [  restartedMain] org.hibernate.Version                    : HHH000412: Hibernate Core {5.3.10.Final}
+2019-06-15 13:15:51.961  INFO 11792 --- [  restartedMain] org.hibernate.cfg.Environment            : HHH000206: hibernate.properties not found
+2019-06-15 13:15:52.049  INFO 11792 --- [  restartedMain] o.hibernate.annotations.common.Version   : HCANN000001: Hibernate Commons Annotations {5.0.4.Final}
+2019-06-15 13:15:52.137  INFO 11792 --- [  restartedMain] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+2019-06-15 13:15:52.571  INFO 11792 --- [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2019-06-15 13:15:52.584  INFO 11792 --- [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2019-06-15 13:15:52.586  INFO 11792 --- [  restartedMain] com.example.demo.WalletServer            : Application constructor
+2019-06-15 13:15:52.907  INFO 11792 --- [  restartedMain] c.e.d.s.I.CurrencyManagmentServiceImpl   : Currencies found with findAll():
+2019-06-15 13:15:52.907  INFO 11792 --- [  restartedMain] c.e.d.s.I.CurrencyManagmentServiceImpl   : -------------------------------
+2019-06-15 13:15:52.946  INFO 11792 --- [  restartedMain] o.h.h.i.QueryTranslatorFactoryInitiator  : HHH000397: Using ASTQueryTranslatorFactory
+2019-06-15 13:15:53.029  INFO 11792 --- [  restartedMain] c.e.d.s.I.CurrencyManagmentServiceImpl   : Currency{ID=1, Name='GBP'}
+2019-06-15 13:15:53.029  INFO 11792 --- [  restartedMain] c.e.d.s.I.CurrencyManagmentServiceImpl   : Currency{ID=2, Name='EUR'}
+2019-06-15 13:15:53.029  INFO 11792 --- [  restartedMain] c.e.d.s.I.CurrencyManagmentServiceImpl   : Currency{ID=3, Name='USD'}
+2019-06-15 13:15:53.030  INFO 11792 --- [  restartedMain] c.e.d.s.I.CurrencyManagmentServiceImpl   : 
+2019-06-15 13:15:53.043  INFO 11792 --- [  restartedMain] c.e.d.s.Impl.UserManagmentServiceImpl    : Remove old users:
+2019-06-15 13:15:53.043  INFO 11792 --- [  restartedMain] c.e.d.s.Impl.UserManagmentServiceImpl    : -------------------------------
+2019-06-15 13:15:53.069  INFO 11792 --- [  restartedMain] c.e.d.s.Impl.UserManagmentServiceImpl    : User{id=1, account=3}
+2019-06-15 13:15:53.069  INFO 11792 --- [  restartedMain] c.e.d.s.Impl.UserManagmentServiceImpl    : User{id=4089, account=3}
+2019-06-15 13:15:53.178  INFO 11792 --- [  restartedMain] c.e.d.s.Impl.UserManagmentServiceImpl    : User{id=4093, account=3}
+2019-06-15 13:15:53.268  INFO 11792 --- [  restartedMain] c.e.d.s.Impl.UserManagmentServiceImpl    : User{id=4097, account=3}
+2019-06-15 13:15:53.357  INFO 11792 --- [  restartedMain] c.e.d.s.Impl.UserManagmentServiceImpl    : User{id=4101, account=3}
+2019-06-15 13:15:53.435  INFO 11792 --- [  restartedMain] c.e.d.s.Impl.UserManagmentServiceImpl    : User{id=4105, account=3}
+2019-06-15 13:15:53.468  INFO 11792 --- [  restartedMain] c.e.d.s.Impl.UserManagmentServiceImpl    : User{id=4109, account=3}
+2019-06-15 13:15:53.513  INFO 11792 --- [  restartedMain] c.e.d.s.Impl.UserManagmentServiceImpl    : User{id=4113, account=3}
+2019-06-15 13:15:53.557  INFO 11792 --- [  restartedMain] c.e.d.s.Impl.UserManagmentServiceImpl    : User{id=4117, account=3}
+2019-06-15 13:15:53.613  INFO 11792 --- [  restartedMain] c.e.d.s.Impl.UserManagmentServiceImpl    : User{id=4121, account=3}
+2019-06-15 13:15:53.657  INFO 11792 --- [  restartedMain] c.e.d.s.Impl.UserManagmentServiceImpl    : User{id=4125, account=3}
+2019-06-15 13:15:53.835  INFO 11792 --- [  restartedMain] c.e.d.s.Impl.UserManagmentServiceImpl    : 
+2019-06-15 13:15:54.357  INFO 11792 --- [  restartedMain] o.s.s.c.ThreadPoolTaskScheduler          : Initializing ExecutorService 'taskScheduler'
+2019-06-15 13:15:54.403  INFO 11792 --- [  restartedMain] c.e.demo.boot.ContextRefreshListener     : Context refresh
+2019-06-15 13:15:54.405  INFO 11792 --- [  restartedMain] com.example.demo.WalletServer            : Started WalletServer in 3.953 seconds (JVM running for 4.254)
+2019-06-15 13:15:54.407  INFO 11792 --- [  restartedMain] com.example.demo.WalletServer            : Found service implementation: accountManagmentServiceImpl
+2019-06-15 13:15:54.407  INFO 11792 --- [  restartedMain] com.example.demo.WalletServer            : Found service implementation: currencyManagmentServiceImpl
+2019-06-15 13:15:54.407  INFO 11792 --- [  restartedMain] com.example.demo.WalletServer            : Found service implementation: grpcServerServiceImpl
+2019-06-15 13:15:54.407  INFO 11792 --- [  restartedMain] com.example.demo.WalletServer            : Found service implementation: userManagmentServiceImpl
+2019-06-15 13:15:54.407  INFO 11792 --- [  restartedMain] com.example.demo.WalletServer            : 
+2019-06-15 13:15:54.407  INFO 11792 --- [  restartedMain] o.l.springboot.grpc.GRpcServerRunner     : Starting gRPC Server ...
+2019-06-15 13:15:54.430  INFO 11792 --- [  restartedMain] o.l.springboot.grpc.GRpcServerRunner     : 'com.example.demo.services.Impl.GrpcServerServiceImpl' service has been registered.
+2019-06-15 13:15:54.475  INFO 11792 --- [  restartedMain] o.l.springboot.grpc.GRpcServerRunner     : gRPC Server started, listening on port 6565.
+2019-06-15 13:15:57.209  INFO 11792 --- [pool-3-thread-2] com.example.demo.WalletClient            : User 4129 action list length 1324
+2019-06-15 13:15:57.211  INFO 11792 --- [pool-3-thread-8] com.example.demo.WalletClient            : User 4133 action list length 1337
+2019-06-15 13:15:57.212  INFO 11792 --- [ool-3-thread-13] com.example.demo.WalletClient            : User 4137 action list length 1315
+2019-06-15 13:15:57.213  INFO 11792 --- [pool-3-thread-9] com.example.demo.WalletClient            : User 4133 action list length 1324
+2019-06-15 13:15:57.213  INFO 11792 --- [pool-3-thread-3] com.example.demo.WalletClient            : User 4129 action list length 1328
+2019-06-15 13:15:57.215  INFO 11792 --- [pool-3-thread-1] com.example.demo.WalletClient            : User 4129 action list length 1321
+2019-06-15 13:15:57.211  INFO 11792 --- [pool-3-thread-5] com.example.demo.WalletClient            : User 4129 action list length 1338
+2019-06-15 13:15:57.230  INFO 11792 --- [ool-3-thread-20] com.example.demo.WalletClient            : User 4141 action list length 1328
+2019-06-15 13:15:57.230  INFO 11792 --- [ool-3-thread-21] com.example.demo.WalletClient            : User 4145 action list length 1358
+2019-06-15 13:15:57.231  INFO 11792 --- [ool-3-thread-22] com.example.demo.WalletClient            : User 4145 action list length 1351
+2019-06-15 13:15:57.246  INFO 11792 --- [ool-3-thread-24] com.example.demo.WalletClient            : User 4145 action list length 1329
+2019-06-15 13:15:57.250  INFO 11792 --- [ool-3-thread-23] com.example.demo.WalletClient            : User 4145 action list length 1344
+2019-06-15 13:15:57.257  INFO 11792 --- [ool-3-thread-26] com.example.demo.WalletClient            : User 4149 action list length 1322
+2019-06-15 13:15:57.286  INFO 11792 --- [ool-3-thread-27] com.example.demo.WalletClient            : User 4149 action list length 1339
+2019-06-15 13:15:57.212  INFO 11792 --- [ool-3-thread-12] com.example.demo.WalletClient            : User 4137 action list length 1348
+2019-06-15 13:15:57.212  INFO 11792 --- [pool-3-thread-7] com.example.demo.WalletClient            : User 4133 action list length 1314
+2019-06-15 13:15:57.215  INFO 11792 --- [ool-3-thread-17] com.example.demo.WalletClient            : User 4141 action list length 1353
+2019-06-15 13:15:57.294  INFO 11792 --- [ool-3-thread-29] com.example.demo.WalletClient            : User 4149 action list length 1312
+2019-06-15 13:15:57.294  INFO 11792 --- [ool-3-thread-31] com.example.demo.WalletClient            : User 4153 action list length 1328
+2019-06-15 13:15:57.295  INFO 11792 --- [ool-3-thread-28] com.example.demo.WalletClient            : User 4149 action list length 1352
+2019-06-15 13:15:57.216  INFO 11792 --- [ool-3-thread-10] com.example.demo.WalletClient            : User 4133 action list length 1296
+2019-06-15 13:15:57.309  INFO 11792 --- [ool-3-thread-32] com.example.demo.WalletClient            : User 4153 action list length 1360
+2019-06-15 13:15:57.216  INFO 11792 --- [ool-3-thread-16] com.example.demo.WalletClient            : User 4141 action list length 1350
+2019-06-15 13:15:57.218  INFO 11792 --- [ool-3-thread-15] com.example.demo.WalletClient            : User 4137 action list length 1320
+2019-06-15 13:15:57.321  INFO 11792 --- [ool-3-thread-35] com.example.demo.WalletClient            : User 4153 action list length 1315
+2019-06-15 13:15:57.328  INFO 11792 --- [ool-3-thread-34] com.example.demo.WalletClient            : User 4153 action list length 1333
+2019-06-15 13:15:57.329  INFO 11792 --- [ool-3-thread-36] com.example.demo.WalletClient            : User 4157 action list length 1353
+2019-06-15 13:15:57.351  INFO 11792 --- [ool-3-thread-39] com.example.demo.WalletClient            : User 4157 action list length 1326
+2019-06-15 13:15:57.385  INFO 11792 --- [ool-3-thread-37] com.example.demo.WalletClient            : User 4157 action list length 1344
+2019-06-15 13:15:57.386  INFO 11792 --- [ool-3-thread-40] com.example.demo.WalletClient            : User 4157 action list length 1353
+2019-06-15 13:15:57.389  INFO 11792 --- [ool-3-thread-42] com.example.demo.WalletClient            : User 4161 action list length 1333
+2019-06-15 13:15:57.399  INFO 11792 --- [ool-3-thread-43] com.example.demo.WalletClient            : User 4161 action list length 1361
+2019-06-15 13:15:57.219  INFO 11792 --- [pool-3-thread-6] com.example.demo.WalletClient            : User 4133 action list length 1306
+2019-06-15 13:15:57.219  INFO 11792 --- [ool-3-thread-11] com.example.demo.WalletClient            : User 4137 action list length 1337
+2019-06-15 13:15:57.220  INFO 11792 --- [ool-3-thread-18] com.example.demo.WalletClient            : User 4141 action list length 1311
+2019-06-15 13:15:57.406  INFO 11792 --- [ool-3-thread-44] com.example.demo.WalletClient            : User 4161 action list length 1346
+2019-06-15 13:15:57.220  INFO 11792 --- [pool-3-thread-4] com.example.demo.WalletClient            : User 4129 action list length 1314
+2019-06-15 13:15:57.428  INFO 11792 --- [ool-3-thread-45] com.example.demo.WalletClient            : User 4161 action list length 1325
+2019-06-15 13:15:57.436  INFO 11792 --- [ool-3-thread-47] com.example.demo.WalletClient            : User 4165 action list length 1327
+2019-06-15 13:15:57.438  INFO 11792 --- [ool-3-thread-48] com.example.demo.WalletClient            : User 4165 action list length 1361
+2019-06-15 13:15:57.439  INFO 11792 --- [ool-3-thread-46] com.example.demo.WalletClient            : User 4165 action list length 1319
+2019-06-15 13:15:57.444  INFO 11792 --- [ool-3-thread-49] com.example.demo.WalletClient            : User 4165 action list length 1355
+2019-06-15 13:15:57.222  INFO 11792 --- [ool-3-thread-14] com.example.demo.WalletClient            : User 4137 action list length 1346
+2019-06-15 13:15:57.453  INFO 11792 --- [ool-3-thread-50] com.example.demo.WalletClient            : User 4165 action list length 1303
+2019-06-15 13:15:57.230  INFO 11792 --- [ool-3-thread-19] com.example.demo.WalletClient            : User 4141 action list length 1337
+2019-06-15 13:15:57.246  INFO 11792 --- [ool-3-thread-25] com.example.demo.WalletClient            : User 4145 action list length 1336
+2019-06-15 13:15:57.295  INFO 11792 --- [ool-3-thread-30] com.example.demo.WalletClient            : User 4149 action list length 1318
+2019-06-15 13:15:57.320  INFO 11792 --- [ool-3-thread-33] com.example.demo.WalletClient            : User 4153 action list length 1300
+2019-06-15 13:15:57.385  INFO 11792 --- [ool-3-thread-38] com.example.demo.WalletClient            : User 4157 action list length 1349
+2019-06-15 13:15:57.389  INFO 11792 --- [ool-3-thread-41] com.example.demo.WalletClient            : User 4161 action list length 1349
+2019-06-15 13:15:58.189  INFO 11792 --- [  restartedMain] com.example.demo.WalletClient            : Threads execution time 1021
+2019-06-15 13:16:01.777  INFO 11792 --- [  restartedMain] com.example.demo.WalletClient            : User planned actions 66658
+2019-06-15 13:16:01.780  INFO 11792 --- [       Thread-8] o.s.s.c.ThreadPoolTaskScheduler          : Shutting down ExecutorService 'taskScheduler'
+2019-06-15 13:16:01.782  INFO 11792 --- [       Thread-8] o.l.springboot.grpc.GRpcServerRunner     : Shutting down gRPC server ...
+2019-06-15 13:16:01.783  INFO 11792 --- [       Thread-8] o.l.springboot.grpc.GRpcServerRunner     : gRPC server stopped.
+2019-06-15 13:16:01.784  INFO 11792 --- [       Thread-8] c.e.d.s.Impl.GrpcServerServiceImpl       : gRPC service processed 66658 messages
+2019-06-15 13:16:01.877  INFO 11792 --- [       Thread-8] c.e.d.s.Impl.UserManagmentServiceImpl    : User service shutdown
+2019-06-15 13:16:01.878  INFO 11792 --- [       Thread-8] c.e.d.s.I.AccountManagmentServiceImpl    : Account service shutdown
+2019-06-15 13:16:01.878  INFO 11792 --- [       Thread-8] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2019-06-15 13:16:01.879  INFO 11792 --- [       Thread-8] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2019-06-15 13:16:01.886  INFO 11792 --- [       Thread-8] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+
+BUILD SUCCESSFUL in 12s
+6 actionable tasks: 1 executed, 5 up-to-date
+13:16:02: Task execution finished 'bootRun'.
